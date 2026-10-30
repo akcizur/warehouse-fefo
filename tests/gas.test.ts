@@ -67,6 +67,10 @@ test("Apps Script add, move and status operations preserve an accurate movement 
   assert.equal(retriedAdd.ok,true);
   assert.equal(retriedAdd.data.packs.length,1);
   assert.equal(retriedAdd.data.movements.length,1);
+  sheets.get("DB_PACKS").rows[1][3]=runInNewContext("new Date(2027,5,30)",context);
+  const retryAfterSheetDateConversion=post(context,"addPack",{pack});
+  assert.equal(retryAfterSheetDateConversion.ok,true);
+  assert.equal(retryAfterSheetDateConversion.data.movements.length,1);
   const moved=post(context,"movePack",{packId:pack.id,boxId:"BOX-B-01",fromBoxId:"BOX-STALE"});
   assert.equal(moved.ok,true);
   assert.equal(moved.data.movements[0].id,"MOV-000002");
