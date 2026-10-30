@@ -98,7 +98,8 @@ test("Apps Script rejects duplicate IDs, invalid expiry, unknown positions and i
   seedReferences(sheets);
   const base={id:"P-26-0001",materialId:"MAT-AA-01",batch:"A",expiry:"06/27",boxId:"BOX-A-01",status:"nový",initialWeight:1};
   assert.equal(post(context,"addPack",{pack:base}).ok,true);
-  assert.equal(post(context,"addPack",{pack:{...base}}).ok,false);
+  assert.equal(post(context,"addPack",{pack:{...base}}).ok,true);
+  assert.equal(post(context,"addPack",{pack:{...base,batch:"DIFFERENT"}}).ok,false);
   assert.equal(post(context,"addPack",{pack:{...base,id:"P-26-0002",expiry:"13/27"}}).ok,false);
   assert.equal(post(context,"addPack",{pack:{...base,id:"P-26-0003",status:"neznámý"}}).ok,false);
   assert.equal(post(context,"addPack",{pack:{...base,id:"P-26-0004",boxId:"BOX-UNKNOWN"}}).ok,false);
