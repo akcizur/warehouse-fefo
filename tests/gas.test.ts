@@ -16,7 +16,8 @@ function createHarness(){
         setFrozenRows(){},
         getLastRow(){return this.rows.length;},
         getDataRange(){return {getValues:()=>this.rows.map(row=>[...row])};},
-        getRange(row,col){return {setValue:value=>{this.rows[row-1][col-1]=value;}};}
+        getRange(row,col){return {setValue:value=>{this.rows[row-1][col-1]=value;}};},
+        deleteRow(row){this.rows.splice(row-1,1);}
       };
       sheets.set(name,sheet);
       return sheet;
@@ -48,6 +49,53 @@ function seedReferences(sheets){
   sheets.get("DB_BOXES").appendRow(["BOX-A-01","REG-A-01"]);
   sheets.get("DB_BOXES").appendRow(["BOX-B-01","REG-B-01"]);
 }
+
+test("Apps Script edits master data and records box relocation",()=>{
+  const {context,sheets}=createHarness();
+  seedReferences(sheets);
+  assert.equal(post(context,"updateMaterial",{id:"MAT-AA-01",name:"Magnesium bisglycinate",unit:"g"}).ok,true);
+  assert.equal(post(context,"updateLocation",{id:"REG-A-01",name:"Regál A · řada 1"}).ok,true);
+  assert.equal(post(context,"updateBox",{id:"BOX-A-01",locationId:"REG-B-01"}).ok,true);
+  const result=JSON.parse(context.doGet({parameter:{action:"get"}}).getContent());
+  assert.equal(result.data.materials[0].unit,"g");
+  assert.equal(result.data.locations[0].name,"Regál A · řada 1");
+  assert.equal(result.data.boxes[0].locationId,"REG-B-01");
+  assert.equal(result.data.movements[0].type,"Přemístění boxu");
+  assert.equal(result.data.movements[0].from,"REG-A-01");
+  assert.equal(result.data.movements[0].to,"REG-B-01");
+  assert.equal(post(context,"updateBox",{id:"BOX-A-01",locationId:"REG-B-01"}).ok,true);
+  assert.equal(JSON.parse(context.doGet({parameter:{action:"get"}}).getContent()).data.movements.length,1);
+});
+
+test("Apps Script prevents deleting referenced master data and deletes unused entries",()=>{
+  const {context,sheets}=createHarness();
+  seedReferences(sheets);
+  const pack={id:"P-26-0099",materialId:"MAT-AA-01",batch:"A",expiry:"06/27",boxId:"BOX-A-01",status:"nový",initialWeight:1};
+  assert.equal(post(context,"addPack",{pack}).ok,true);
+  assert.equal(post(context,"deleteMaterial",{id:"MAT-AA-01"}).ok,false);
+  assert.equal(post(context,"deleteLocation",{id:"REG-A-01"}).ok,false);
+  assert.equal(post(context,"deleteBox",{id:"BOX-A-01"}).ok,false);
+  assert.equal(post(context,"deleteMaterial",{id:"MAT-NO-01"}).ok,false);
+  assert.equal(post(context,"addMaterial",{material:{id:"MAT-BB-01",name:"Volná",unit:"kg"}}).ok,true);
+  assert.equal(post(context,"addLocation",{location:{id:"PAL-C-01",name:"Volná paleta"}}).ok,true);
+  assert.equal(post(context,"addBox",{box:{id:"BOX-C-01",locationId:"PAL-C-01"}}).ok,true);
+  assert.equal(post(context,"deleteBox",{id:"BOX-C-01"}).ok,true);
+  assert.equal(post(context,"deleteLocation",{id:"PAL-C-01"}).ok,true);
+  assert.equal(post(context,"deleteMaterial",{id:"MAT-BB-01"}).ok,true);
+  const result=JSON.parse(context.doGet({parameter:{action:"get"}}).getContent());
+  assert.equal(result.data.materials.some(x=>x.id==="MAT-BB-01"),false);
+  assert.equal(result.data.locations.some(x=>x.id==="PAL-C-01"),false);
+  assert.equal(result.data.boxes.some(x=>x.id==="BOX-C-01"),false);
+});
+
+test("Apps Script keeps boxes and positions when movement history references their IDs",()=>{
+  const {context,sheets}=createHarness();
+  seedReferences(sheets);
+  assert.equal(post(context,"updateBox",{id:"BOX-A-01",locationId:"REG-B-01"}).ok,true);
+  assert.equal(post(context,"deleteLocation",{id:"REG-A-01"}).ok,false);
+  assert.equal(post(context,"deleteLocation",{id:"REG-B-01"}).ok,false);
+  assert.equal(post(context,"deleteBox",{id:"BOX-A-01"}).ok,false);
+});
 
 test("Apps Script creates and safely retries materials, locations and boxes",()=>{
   const {context,sheets}=createHarness();

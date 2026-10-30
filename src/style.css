@@ -7,3 +7,11 @@
 .master-form .primary{min-height:36px;white-space:nowrap}
 @media(max-width:760px){.master-form{grid-template-columns:1fr 1fr}.master-form .primary{grid-column:1/-1}}
 @media(max-width:390px){.master-form{grid-template-columns:1fr}}
+
+.row-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.row-actions .icon-btn{padding:7px}
+.icon-btn.danger{color:#c88f8f}
+.master-row>span{flex-shrink:0}
+.dialog-copy{font-size:12px;line-height:1.6;color:#999;margin:0 0 20px}
+.dialog-actions{display:flex;justify-content:flex-end;gap:8px}
+@media(max-width:500px){.master-row{flex-wrap:wrap}.master-row>div:first-child{min-width:130px;flex:1}.master-row .row-actions{margin-left:auto}}
