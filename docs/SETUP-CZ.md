@@ -14,6 +14,8 @@
 5. Nasaď jako **Web app**. Execute as: **Me**. Přístup nastav podle interních bezpečnostních požadavků organizace. Veřejné zpřístupnění znamená, že endpoint není vhodný pro citlivá skladová data bez další autentizace.
 6. Zkopíruj URL končící `/exec`.
 7. V aplikaci otevři Nastavení a vlož URL.
+8. Při prvním spuštění se připojení ověří automaticky. V záložce **Suroviny** založ materiály (`MAT-AA-01`); v **Pozice** založ regálové/paletové pozice (`REG-A-01`, `PAL-A-01`) a přiřaď jim boxy (`BOX-A-01`). Teprve potom přijímej balení.
+9. Neodeslané operace se ukládají lokálně do fronty a při další synchronizaci se bezpečně opakují.
 
 ## Důležité omezení API
 GitHub Pages je jiná doména než Apps Script. `google.script.run` na GitHub Pages nefunguje. Frontend proto používá HTTP endpoint `doGet/doPost`. Apps Script ContentService může při cross-origin požadavcích způsobit omezení CORS/přesměrování v prohlížeči. Ověř čtení i zápis v cílovém Google účtu; pokud prohlížeč odpověď zablokuje, je nutné doplnit ověřený autentizační/proxy mechanismus nebo hostovat UI přes Apps Script HtmlService. Nezadávej citlivá data do veřejného endpointu.

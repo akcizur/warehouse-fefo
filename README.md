@@ -9,12 +9,14 @@ Minimalistická skladová aplikace pro evidenci surovin, jednotlivých balení, 
 - Google Apps Script jako HTTP API
 - QR scanner přes ZXing Browser
 
-## Funkce v aktuální verzi 0.2.0
+## Funkce v aktuální verzi 0.3.0
 - FEFO řazení podle expirace
+- Správa surovin, skladových pozic a boxů přímo v aplikaci
 - Příjem balení a přesun konkrétního balení mezi boxy
 - QR skenování ID balení s bezpečným lifecycle kamery
 - Změna stavu `nový → otevřený → prázdný` s uložením do Sheets a pohybovým logem
 - Pohybový ledger s původní i cílovou hodnotou
+- Fronta neodeslaných změn a bezpečné opakování API požadavků
 - Ochrana lokálních dat před přepsáním prázdným vzdáleným skladem
 - JSON export a obnova lokální zálohy
 - Validace expirace, existence materiálu/boxu a duplicitních ID v API
@@ -40,4 +42,4 @@ npm run dev
 npm run build
 ```
 
-Stav: implementace 0.2.0. Před ostrým provozem je stále nutné ověřit reálný Apps Script endpoint, oprávnění a úspěšný GitHub Actions build.
+Stav: implementace 0.3.0. Před ostrým provozem je stále nutné ověřit reálný Apps Script endpoint, oprávnění a úspěšný GitHub Actions build.
