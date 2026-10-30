@@ -182,3 +182,27 @@ test("Apps Script reads Sheets date cells back as MM/RR expiry values",()=>{
   const result=JSON.parse(context.doGet({parameter:{action:"get"}}).getContent());
   assert.equal(result.data.packs[0].expiry,"06/27");
 });
+
+test("Apps Script edits pack metadata, logs changes and safely retries",()=>{
+  const {context,sheets}=createHarness();
+  seedReferences(sheets);
+  const pack={id:"P-26-0001",materialId:"MAT-AA-01",batch:"A",expiry:"06/27",boxId:"BOX-A-01",status:"nový",initialWeight:2.5,receivedAt:"2026-10-30T10:00:00.000Z"};
+  assert.equal(post(context,"addPack",{pack}).ok,true);
+  const changed={...pack,materialId:"MAT-AA-01",batch:"B",expiry:"08/27",boxId:"BOX-B-01",initialWeight:3};
+  const updated=post(context,"updatePack",{pack:changed});
+  assert.equal(updated.ok,true);
+  assert.equal(updated.data.packs[0].id,pack.id);
+  assert.equal(updated.data.packs[0].batch,"B");
+  assert.equal(updated.data.packs[0].expiry,"08/27");
+  assert.equal(updated.data.packs[0].boxId,"BOX-B-01");
+  assert.equal(updated.data.packs[0].initialWeight,3);
+  assert.equal(updated.data.packs[0].status,"nový");
+  assert.equal(updated.data.movements.length,3);
+  assert.equal(updated.data.movements[0].type,"Přesun balení");
+  assert.equal(updated.data.movements[0].from,"BOX-A-01");
+  assert.equal(updated.data.movements[0].to,"BOX-B-01");
+  assert.equal(updated.data.movements[1].type,"Úprava balení");
+  assert.equal(post(context,"updatePack",{pack:changed}).data.movements.length,3);
+  assert.equal(post(context,"updatePack",{pack:{...changed,expiry:"13/27"}}).ok,false);
+  assert.equal(post(context,"updatePack",{pack:{...changed,boxId:"BOX-NO-01"}}).ok,false);
+});
