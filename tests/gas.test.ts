@@ -7,6 +7,7 @@ function createHarness(){
   const sheets=new Map();
   const properties=new Map();
   const spreadsheet={
+    getId(){return "test-spreadsheet-id";},
     getSheetByName(name){return sheets.get(name)||null;},
     insertSheet(name){
       const sheet={
