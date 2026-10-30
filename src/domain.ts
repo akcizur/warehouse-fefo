@@ -13,6 +13,7 @@ export function isValidExpiry(value:string):boolean {
 }
 
 export function expiry(value:string):number {
-  const match=value.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
+  const normalized=value.trim();
+  const match=normalized.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
   return match?new Date(2000+Number(match[2]),Number(match[1]),0).getTime():Number.MAX_SAFE_INTEGER;
 }
