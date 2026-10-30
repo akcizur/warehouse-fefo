@@ -44,3 +44,5 @@
   .print-sheet:not(:last-child){break-after:page!important}
   .qr-label{border:1px dashed #999!important;break-inside:avoid!important}
 }
+
+@media(max-width:760px){.sidebar nav button{flex:1;min-width:0;padding:7px 3px;font-size:9px}}
