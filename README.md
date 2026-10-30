@@ -9,20 +9,29 @@ Minimalistická skladová aplikace pro evidenci surovin, jednotlivých balení, 
 - Google Apps Script jako HTTP API
 - QR scanner přes ZXing Browser
 
-## Funkce v aktuální verzi
-- Přehled skladu a FEFO řazení podle expirace
-- Evidence surovin, balení, boxů a pozic
-- Příjem balení a přesun mezi boxy
-- QR skenování ID balení kamerou
-- Historie příjmu a přesunů
-- Lokální testovací režim a export JSON zálohy
+## Funkce v aktuální verzi 0.2.0
+- FEFO řazení podle expirace
+- Příjem balení a přesun konkrétního balení mezi boxy
+- QR skenování ID balení s bezpečným lifecycle kamery
+- Změna stavu `nový → otevřený → prázdný` s uložením do Sheets a pohybovým logem
+- Pohybový ledger s původní i cílovou hodnotou
+- Ochrana lokálních dat před přepsáním prázdným vzdáleným skladem
+- JSON export a obnova lokální zálohy
+- Validace expirace, existence materiálu/boxu a duplicitních ID v API
 - Responzivní rozhraní pro mobil i desktop
+
+## Datová pravidla
+- Jeden materiál může mít více balení.
+- Balení je umístěné v jednom boxu.
+- Box má právě jednu skladovou pozici.
+- Na jedné pozici může být více boxů.
+- QR obsahuje pouze `ID_Pack`.
+- Expirace je zadávána ručně jako `MM/RR`; systém ji automaticky nevypočítává.
 
 ## Nasazení
 Viz [český instalační návod](docs/SETUP-CZ.md).
 
-## Důležité
-GitHub Pages a Apps Script jsou oddělené originy. Aplikace proto nepoužívá `google.script.run`, ale HTTP `doGet/doPost`. Ověř CORS, oprávnění a autentizaci při nasazení Apps Scriptu. Veřejně dostupný endpoint bez autentizace není vhodný pro citlivé skladové údaje.
+GitHub Pages a Apps Script jsou oddělené originy. Aplikace proto nepoužívá `google.script.run`, ale HTTP `doGet/doPost`. Při nasazení je nutné ověřit CORS, oprávnění a autentizaci Apps Script Web Appu.
 
 ## Vývoj
 ```bash
@@ -31,4 +40,4 @@ npm run dev
 npm run build
 ```
 
-Stav: počáteční implementace 0.1.0. Před ostrým provozem je nutné ověřit API propojení, oprávnění a build v GitHub Actions.
+Stav: implementace 0.2.0. Před ostrým provozem je stále nutné ověřit reálný Apps Script endpoint, oprávnění a úspěšný GitHub Actions build.
