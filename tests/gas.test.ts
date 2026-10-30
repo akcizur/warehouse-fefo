@@ -49,6 +49,24 @@ function seedReferences(sheets){
   sheets.get("DB_BOXES").appendRow(["BOX-B-01","REG-B-01"]);
 }
 
+test("Apps Script creates and safely retries materials, locations and boxes",()=>{
+  const {context,sheets}=createHarness();
+  const material={id:"MAT-MB-01",name:"Magnesium bisglycinate",unit:"kg"};
+  const location={id:"REG-A-01",name:"Regál A · pozice 01"};
+  const box={id:"BOX-A-01",locationId:"REG-A-01"};
+  assert.equal(post(context,"addMaterial",{material}).ok,true);
+  assert.equal(post(context,"addMaterial",{material}).ok,true);
+  assert.equal(post(context,"addMaterial",{material:{...material,name:"Jiný materiál"}}).ok,false);
+  assert.equal(post(context,"addLocation",{location}).ok,true);
+  assert.equal(post(context,"addLocation",{location}).ok,true);
+  assert.equal(post(context,"addBox",{box}).ok,true);
+  assert.equal(post(context,"addBox",{box}).ok,true);
+  assert.equal(post(context,"addBox",{box:{id:"BOX-B-01",locationId:"MISSING"}}).ok,false);
+  assert.equal(sheets.get("DB_MATERIALS").getLastRow(),2);
+  assert.equal(sheets.get("DB_LOCATIONS").getLastRow(),2);
+  assert.equal(sheets.get("DB_BOXES").getLastRow(),2);
+});
+
 test("Apps Script setup creates all warehouse sheets and GET returns their collections",()=>{
   const {context}=createHarness();
   const result=JSON.parse(context.doGet({parameter:{action:"get"}}).getContent());
