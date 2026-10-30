@@ -75,7 +75,7 @@ test("Apps Script prevents deleting referenced master data and deletes unused en
   assert.equal(post(context,"deleteMaterial",{id:"MAT-AA-01"}).ok,false);
   assert.equal(post(context,"deleteLocation",{id:"REG-A-01"}).ok,false);
   assert.equal(post(context,"deleteBox",{id:"BOX-A-01"}).ok,false);
-  assert.equal(post(context,"deleteMaterial",{id:"MAT-NO-01"}).ok,false);
+  assert.equal(post(context,"deleteMaterial",{id:"MAT-NO-01"}).ok,true);
   assert.equal(post(context,"addMaterial",{material:{id:"MAT-BB-01",name:"Volná",unit:"kg"}}).ok,true);
   assert.equal(post(context,"addLocation",{location:{id:"PAL-C-01",name:"Volná paleta"}}).ok,true);
   assert.equal(post(context,"addBox",{box:{id:"BOX-C-01",locationId:"PAL-C-01"}}).ok,true);
