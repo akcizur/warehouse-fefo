@@ -67,12 +67,16 @@ test("Apps Script add, move and status operations preserve an accurate movement 
   assert.equal(moved.ok,true);
   assert.equal(moved.data.movements[0].id,"MOV-000002");
   assert.equal(moved.data.movements[0].from,"BOX-A-01");
+  assert.equal(moved.data.movements[0].id,"MOV-000002");
   assert.equal(moved.data.packs[0].boxId,"BOX-B-01");
   const status=post(context,"updatePackStatus",{packId:pack.id,status:"otevřený"});
   assert.equal(status.ok,true);
   assert.equal(status.data.movements[0].id,"MOV-000003");
   assert.equal(status.data.movements[0].from,"nový");
   assert.equal(status.data.packs[0].status,"otevřený");
+  const reverseStatus=post(context,"updatePackStatus",{packId:pack.id,status:"nový"});
+  assert.equal(reverseStatus.ok,false);
+  assert.equal(reverseStatus.data,undefined);
 });
 
 test("Apps Script rejects duplicate IDs, invalid expiry, unknown positions and invalid statuses",()=>{
